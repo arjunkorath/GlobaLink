@@ -23,7 +23,7 @@ interface AIChatModalProps {
   };
 }
 
-const genAI = new GoogleGenerativeAI('YOUR_API_KEY');
+const genAI = new GoogleGenerativeAI(AIzaSyCmTjd2EBkyQbm3sA5GTrMqS7PfHIury98);
 
 export default function AIChatModal({ isVisible, onClose, articleContent }: AIChatModalProps) {
   const [message, setMessage] = useState('');
