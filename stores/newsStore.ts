@@ -33,6 +33,30 @@ const NEWS_SOURCES = {
   ],
 };
 
+const extractImageUrl = (item: any): string | undefined => {
+  if (item.enclosures?.[0]?.url) {
+    return item.enclosures[0].url;
+  }
+  
+  // Extract image from content if available
+  const imgMatch = item.content?.match(/<img[^>]+src="([^">]+)"/);
+  if (imgMatch) {
+    return imgMatch[1];
+  }
+  
+  // Extract image from description if available
+  const descImgMatch = item.description?.match(/<img[^>]+src="([^">]+)"/);
+  if (descImgMatch) {
+    return descImgMatch[1];
+  }
+  
+  return undefined;
+};
+
+const sortNewsByDate = (news: NewsItem[]): NewsItem[] => {
+  return news.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+};
+
 export const useNewsStore = create<NewsStore>((set, get) => ({
   indianNews: [],
   globalNews: [],
@@ -48,18 +72,18 @@ export const useNewsStore = create<NewsStore>((set, get) => ({
         const text = await response.text();
         const feed = await rssParser.parse(text);
         return feed.items.map((item) => ({
-          id: item.id,
+          id: item.id || item.guid || item.link,
           title: item.title,
-          description: item.description,
+          description: item.description?.replace(/<[^>]+>/g, ''),
           published: item.published,
-          link: item.links[0]?.url,
-          imageUrl: item.enclosures?.[0]?.url,
+          link: item.links[0]?.url || item.link,
+          imageUrl: extractImageUrl(item),
           source: new URL(url).hostname,
         }));
       });
 
       const allNews = await Promise.all(newsPromises);
-      set({ indianNews: allNews.flat(), loading: false });
+      set({ indianNews: sortNewsByDate(allNews.flat()), loading: false });
     } catch (error) {
       set({ error: 'Failed to fetch Indian news', loading: false });
     }
@@ -73,18 +97,18 @@ export const useNewsStore = create<NewsStore>((set, get) => ({
         const text = await response.text();
         const feed = await rssParser.parse(text);
         return feed.items.map((item) => ({
-          id: item.id,
+          id: item.id || item.guid || item.link,
           title: item.title,
-          description: item.description,
+          description: item.description?.replace(/<[^>]+>/g, ''),
           published: item.published,
-          link: item.links[0]?.url,
-          imageUrl: item.enclosures?.[0]?.url,
+          link: item.links[0]?.url || item.link,
+          imageUrl: extractImageUrl(item),
           source: new URL(url).hostname,
         }));
       });
 
       const allNews = await Promise.all(newsPromises);
-      set({ globalNews: allNews.flat(), loading: false });
+      set({ globalNews: sortNewsByDate(allNews.flat()), loading: false });
     } catch (error) {
       set({ error: 'Failed to fetch global news', loading: false });
     }

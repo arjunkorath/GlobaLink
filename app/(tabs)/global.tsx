@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { useNewsStore } from '../../stores/newsStore';
 import NewsCard from '../../components/NewsCard';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 export default function GlobalNewsScreen() {
   const { globalNews, loading, error, fetchGlobalNews } = useNewsStore();
@@ -10,9 +11,12 @@ export default function GlobalNewsScreen() {
     fetchGlobalNews();
   }, []);
 
+  const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+
   return (
-    <ScrollView
+    <AnimatedScrollView
       style={styles.container}
+      entering={FadeIn}
       refreshControl={
         <RefreshControl
           refreshing={loading}
@@ -20,19 +24,19 @@ export default function GlobalNewsScreen() {
           tintColor="#FFFFFF"
         />
       }
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
     >
-      <View style={styles.content}>
-        {loading && !globalNews.length ? (
-          <ActivityIndicator size="large\" color="#007AFF" />
-        ) : error ? (
-          <Text style={styles.error}>{error}</Text>
-        ) : (
-          globalNews.map((item) => (
-            <NewsCard key={item.id} item={item} />
-          ))
-        )}
-      </View>
-    </ScrollView>
+      {loading && !globalNews.length ? (
+        <ActivityIndicator size="large" color="#007AFF" />
+      ) : error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : (
+        globalNews.map((item, index) => (
+          <NewsCard key={item.id} item={item} index={index} />
+        ))
+      )}
+    </AnimatedScrollView>
   );
 }
 

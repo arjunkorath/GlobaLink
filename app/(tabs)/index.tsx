@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { useNewsStore } from '../../stores/newsStore';
 import NewsCard from '../../components/NewsCard';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 export default function IndianNewsScreen() {
   const { indianNews, loading, error, fetchIndianNews } = useNewsStore();
@@ -10,9 +11,12 @@ export default function IndianNewsScreen() {
     fetchIndianNews();
   }, []);
 
+  const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+
   return (
-    <ScrollView
+    <AnimatedScrollView
       style={styles.container}
+      entering={FadeIn}
       refreshControl={
         <RefreshControl
           refreshing={loading}
@@ -20,19 +24,19 @@ export default function IndianNewsScreen() {
           tintColor="#FFFFFF"
         />
       }
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
     >
-      <View style={styles.content}>
-        {loading && !indianNews.length ? (
-          <ActivityIndicator size="large\" color="#007AFF" />
-        ) : error ? (
-          <Text style={styles.error}>{error}</Text>
-        ) : (
-          indianNews.map((item) => (
-            <NewsCard key={item.id} item={item} />
-          ))
-        )}
-      </View>
-    </ScrollView>
+      {loading && !indianNews.length ? (
+        <ActivityIndicator size="large" color="#007AFF" />
+      ) : error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : (
+        indianNews.map((item, index) => (
+          <NewsCard key={item.id} item={item} index={index} />
+        ))
+      )}
+    </AnimatedScrollView>
   );
 }
 
