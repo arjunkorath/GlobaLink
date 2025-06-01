@@ -1,8 +1,10 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Bookmark } from 'lucide-react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+import { Bookmark, MessageSquareMore } from 'lucide-react-native';
 import { useNewsStore } from '../stores/newsStore';
 import * as WebBrowser from 'expo-web-browser';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useState } from 'react';
+import AIChatModal from './AIChatModal';
 
 const DEFAULT_IMAGE = 'https://images.pexels.com/photos/518543/pexels-photo-518543.jpeg';
 
@@ -22,6 +24,7 @@ interface NewsCardProps {
 export default function NewsCard({ item, index }: NewsCardProps) {
   const { bookmarks, toggleBookmark } = useNewsStore();
   const isBookmarked = bookmarks.some((bookmark) => bookmark.id === item.id);
+  const [isAIChatVisible, setIsAIChatVisible] = useState(false);
 
   const handlePress = async () => {
     if (Platform.OS === 'web') {
@@ -57,19 +60,39 @@ export default function NewsCard({ item, index }: NewsCardProps) {
                 minute: '2-digit'
               })}
             </Text>
-            <TouchableOpacity
-              onPress={() => toggleBookmark(item)}
-              style={styles.bookmarkButton}
-            >
-              <Bookmark
-                size={20}
-                color={isBookmarked ? '#007AFF' : '#8E8E93'}
-                fill={isBookmarked ? '#007AFF' : 'transparent'}
-              />
-            </TouchableOpacity>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                onPress={() => setIsAIChatVisible(true)}
+                style={styles.actionButton}
+              >
+                <MessageSquareMore
+                  size={20}
+                  color="#007AFF"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => toggleBookmark(item)}
+                style={styles.actionButton}
+              >
+                <Bookmark
+                  size={20}
+                  color={isBookmarked ? '#007AFF' : '#8E8E93'}
+                  fill={isBookmarked ? '#007AFF' : 'transparent'}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </TouchableOpacity>
+
+      <AIChatModal
+        isVisible={isAIChatVisible}
+        onClose={() => setIsAIChatVisible(false)}
+        articleContent={{
+          title: item.title,
+          description: item.description
+        }}
+      />
     </Animated.View>
   );
 }
@@ -122,7 +145,12 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     fontSize: 12,
   },
-  bookmarkButton: {
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
     padding: 4,
+    marginLeft: 8,
   },
 });
