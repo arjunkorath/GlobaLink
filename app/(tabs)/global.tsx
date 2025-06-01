@@ -23,7 +23,7 @@ export default function GlobalNewsScreen() {
     >
       <View style={styles.content}>
         {loading && !globalNews.length ? (
-          <ActivityIndicator size="large\" color="#007AFF" />
+          <ActivityIndicator size="large" color="#007AFF" />
         ) : error ? (
           <Text style={styles.error}>{error}</Text>
         ) : (
