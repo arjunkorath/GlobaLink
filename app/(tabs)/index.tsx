@@ -23,7 +23,7 @@ export default function IndianNewsScreen() {
     >
       <View style={styles.content}>
         {loading && !indianNews.length ? (
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large\" color="#007AFF" />
         ) : error ? (
           <Text style={styles.error}>{error}</Text>
         ) : (
