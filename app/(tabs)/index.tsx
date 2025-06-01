@@ -28,7 +28,7 @@ export default function IndianNewsScreen() {
       showsVerticalScrollIndicator={false}
     >
       {loading && !indianNews.length ? (
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large\" color="#007AFF" />
       ) : error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (

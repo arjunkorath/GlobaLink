@@ -28,7 +28,7 @@ export default function GlobalNewsScreen() {
       showsVerticalScrollIndicator={false}
     >
       {loading && !globalNews.length ? (
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large\" color="#007AFF" />
       ) : error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (
