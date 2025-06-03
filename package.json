@@ -9,6 +9,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@expo/vector-icons": "^14.0.0",
     "@google/generative-ai": "^0.2.1",
     "@lucide/lab": "^0.1.2",
